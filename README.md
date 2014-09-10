@@ -3,12 +3,12 @@ Client FTP
 
 Cliente FTP básico hecho en Java
 
-<h2>Funcionalidades:</h2>
+<h4>Funcionalidades:</h4>
 
 1. Enviar archivos a un sevidor FTP
 2. Recibir archivos de un servidor FTP
 
-<h2>Comandos que acepta el cliente:</h2>
+<h4>Comandos que acepta el cliente:</h4>
 
 1. CWD [ruta] - Cambiar de directorio
 2. LIST [ruta] - Listar información de un archivo o un directorio

@@ -20,3 +20,4 @@ Cliente FTP básico hecho en Java
 8. TYPE [type-character] - Especificar el tipo de transferencia (E para ASCII e I para binaria)
 
 Nota: Es ideal que haya una interfaz gráfica
+

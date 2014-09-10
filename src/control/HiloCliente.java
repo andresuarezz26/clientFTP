@@ -1,6 +1,8 @@
 package control;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -9,8 +11,9 @@ import java.util.Scanner;
 public class HiloCliente extends Thread
 {
 
-	private Socket skt;
-	private PrintWriter out;
+	// Parámetros de la conexión de control
+	private Socket sktControl;
+	private PrintWriter outControl;
 	private boolean cerrarConexion;
 
 	public HiloCliente(InetAddress dirServer, int portServer)
@@ -18,8 +21,8 @@ public class HiloCliente extends Thread
 
 		try
 		{
-			skt = new Socket(dirServer,portServer);
-			out = new PrintWriter(skt.getOutputStream(), true);
+			sktControl = new Socket(dirServer, portServer);
+			outControl = new PrintWriter(sktControl.getOutputStream(), true);
 			cerrarConexion = false;
 
 		} catch (IOException e)
@@ -35,6 +38,8 @@ public class HiloCliente extends Thread
 		{
 			try
 			{
+
+				// Escritura de comandos
 				System.out.println("Ingrese su comando");
 				Scanner in = new Scanner(System.in);
 				String texto = in.nextLine();
@@ -42,14 +47,27 @@ public class HiloCliente extends Thread
 				// Finalizar la conexión con el servidor
 				if (texto.equalsIgnoreCase("FINISH"))
 				{
-					out.close();
-					skt.close();
+					outControl.close();
+					sktControl.close();
 					cerrarConexion = true;
 				}
 				// Enviar texto al servidor
 				else
 				{
-					out.println(texto);
+					outControl.println(texto);
+				}
+
+				// Recepción de respuestas
+				if (!sktControl.isClosed())
+				{
+					BufferedReader input = new BufferedReader(new InputStreamReader(sktControl.getInputStream()));
+					// Mientras el buffer está vacío
+					while (!input.ready())
+					{
+					}
+
+					String respuesta = input.readLine();
+					System.out.println(respuesta);
 				}
 
 			} catch (IOException e)
@@ -58,7 +76,7 @@ public class HiloCliente extends Thread
 			}
 
 		}
-		
+
 		System.out.println("La conexión se ha cerrado");
 	}
 

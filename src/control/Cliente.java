@@ -1,7 +1,6 @@
 package control;
 
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Cliente
@@ -9,8 +8,6 @@ public class Cliente
 
 	// Dirección IP del servidor
 	static InetAddress localhost = null;
-	// Socket
-	static Socket skt;
 
 	public static void main(String[] args)
 	{

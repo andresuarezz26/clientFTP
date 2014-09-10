@@ -8,7 +8,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class HiloCliente extends Thread
+public class ClientPI extends Thread
 {
 
 	// Parámetros de la conexión de control
@@ -16,7 +16,7 @@ public class HiloCliente extends Thread
 	private PrintWriter outControl;
 	private boolean cerrarConexion;
 
-	public HiloCliente(InetAddress dirServer, int portServer)
+	public ClientPI(InetAddress dirServer, int portServer)
 	{
 
 		try
@@ -40,13 +40,14 @@ public class HiloCliente extends Thread
 			{
 
 				// Escritura de comandos
-				System.out.println("Ingrese su comando");
+				System.out.print(">>");
 				Scanner in = new Scanner(System.in);
 				String texto = in.nextLine();
 
 				// Finalizar la conexión con el servidor
-				if (texto.equalsIgnoreCase("FINISH"))
+				if (texto.equalsIgnoreCase("END"))
 				{
+					outControl.print("END");
 					outControl.close();
 					sktControl.close();
 					cerrarConexion = true;
@@ -66,8 +67,15 @@ public class HiloCliente extends Thread
 					{
 					}
 
+					// Obtener e imprimir el resultado
 					String respuesta = input.readLine();
-					System.out.println(respuesta);
+					String divisionRespuesta[] = respuesta.split(";");
+					for (String item : divisionRespuesta)
+					{
+						System.out.println(item);
+
+					}
+
 				}
 
 			} catch (IOException e)

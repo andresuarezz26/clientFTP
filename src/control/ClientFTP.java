@@ -3,7 +3,7 @@ package control;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-public class Cliente
+public class ClientFTP
 {
 
 	// Dirección IP del servidor
@@ -19,7 +19,7 @@ public class Cliente
 			System.out.println("Error obteniendo la direccion localhost");
 		}
 
-		HiloCliente hilo = new HiloCliente(localhost, 4000);
+		ClientPI hilo = new ClientPI(localhost, 4000);
 		hilo.start();
 
 	}

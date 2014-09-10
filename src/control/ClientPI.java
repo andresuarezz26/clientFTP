@@ -59,15 +59,20 @@ public class ClientPI extends Thread
 					cerrarConexion = true;
 				} else if (particion.length == 2)
 				{
+					// Enviar comando
+					outControl.println(texto);
+
+					// Comando STOR
 					if (particion[0].equalsIgnoreCase("STOR"))
 					{
-						// Enviar comando
-						outControl.println(texto);
+						// Envíar archivo
 						clientDTP.sendFile(clientDTP.getCurrentPath() + "/" + particion[1]);
-					} else
+					}
+					// Comando RETR
+					else if (particion[0].equalsIgnoreCase("RETR"))
 					{
-						outControl.println(texto);
-
+						// Recibir archivo
+						clientDTP.receiveFile(particion[1]);
 					}
 
 				}

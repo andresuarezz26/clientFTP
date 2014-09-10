@@ -1,9 +1,12 @@
 package control;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -16,6 +19,8 @@ public class ClientDTP
 
 	private InetAddress dirServer;
 	private int portServer;
+
+	// Socket de Datos
 
 	public ClientDTP(InetAddress dirServer, int portServer)
 	{
@@ -74,6 +79,58 @@ public class ClientDTP
 		} catch (IOException e)
 		{
 			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * Permite obtener el archivo envíado por el servidor
+	 * 
+	 * @param is
+	 *            Flujo por el cual se recibe el archivo
+	 * @param path
+	 *            Ruta del archivo del cliente
+	 * @throws Exception
+	 *             Excepción en caso de que haya problemas en el flujo
+	 */
+	public void receiveFile(String path)
+	{
+		Socket sktData;
+		try
+		{
+			sktData = new Socket(dirServer, portServer);
+			InputStream is = sktData.getInputStream();
+
+			// Obtener nombre del archivo
+			String[] particion = path.split("/");
+			String nombreArchivo = particion[particion.length - 1];
+
+			int filesize = 6022386;
+			int bytesRead;
+			int current = 0;
+			byte[] mybytearray = new byte[filesize];
+
+			FileOutputStream fos = new FileOutputStream(getCurrentPath() + "/" + nombreArchivo);
+			BufferedOutputStream bos = new BufferedOutputStream(fos);
+			bytesRead = is.read(mybytearray, 0, mybytearray.length);
+			current = bytesRead;
+
+			do
+			{
+				bytesRead = is.read(mybytearray, current, (mybytearray.length - current));
+				if (bytesRead >= 0)
+					current += bytesRead;
+			} while (bytesRead > -1);
+
+			bos.write(mybytearray, 0, current);
+			bos.flush();
+			bos.close();
+			sktData.close();
+
+			System.out.println("El archivo se recibió exitosamento");
+		} catch (IOException e)
+		{
+			System.out.println("No se pudo recibir el archivo");
 		}
 
 	}

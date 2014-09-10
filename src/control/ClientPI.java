@@ -61,9 +61,13 @@ public class ClientPI extends Thread
 				{
 					if (particion[0].equalsIgnoreCase("STOR"))
 					{
-						//Enviar comando
+						// Enviar comando
 						outControl.println(texto);
 						clientDTP.sendFile(clientDTP.getCurrentPath() + "/" + particion[1]);
+					} else
+					{
+						outControl.println(texto);
+
 					}
 
 				}

@@ -16,6 +16,9 @@ public class ClientPI extends Thread
 	private PrintWriter outControl;
 	private boolean cerrarConexion;
 
+	// Client DTP
+	private ClientDTP clientDTP;
+
 	public ClientPI(InetAddress dirServer, int portServer)
 	{
 
@@ -24,6 +27,8 @@ public class ClientPI extends Thread
 			sktControl = new Socket(dirServer, portServer);
 			outControl = new PrintWriter(sktControl.getOutputStream(), true);
 			cerrarConexion = false;
+
+			clientDTP = new ClientDTP(dirServer, 4001);
 
 		} catch (IOException e)
 		{
@@ -43,6 +48,7 @@ public class ClientPI extends Thread
 				System.out.print(">>");
 				Scanner in = new Scanner(System.in);
 				String texto = in.nextLine();
+				String particion[] = texto.split(" ");
 
 				// Finalizar la conexión con el servidor
 				if (texto.equalsIgnoreCase("END"))
@@ -51,6 +57,15 @@ public class ClientPI extends Thread
 					outControl.close();
 					sktControl.close();
 					cerrarConexion = true;
+				} else if (particion.length == 2)
+				{
+					if (particion[0].equalsIgnoreCase("STOR"))
+					{
+						//Enviar comando
+						outControl.println(texto);
+						clientDTP.sendFile(clientDTP.getCurrentPath() + "/" + particion[1]);
+					}
+
 				}
 				// Enviar texto al servidor
 				else
@@ -87,5 +102,4 @@ public class ClientPI extends Thread
 
 		System.out.println("La conexión se ha cerrado");
 	}
-
 }

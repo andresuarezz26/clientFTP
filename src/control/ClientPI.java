@@ -76,21 +76,43 @@ public class ClientPI extends Thread
 				// Si el comando tiene un parámetro
 				else if (particion.length == 2)
 				{
-					// Enviar comando
-					outControl.println(texto);
 
 					// Comando STOR
-					if (particion[0].equalsIgnoreCase("STOR") || texto.equalsIgnoreCase("PUT"))
+					if (particion[0].equalsIgnoreCase("STOR") || particion[0].equalsIgnoreCase("PUT"))
 					{
 
 						if (isAscii)
 						{
-							// Enviar archivo
-							clientDTP.sendFile(clientDTP.getCurrentPath() + "/" + particion[1], true);
+							if (clientDTP.existsFile(clientDTP.getCurrentPath() + "/" + particion[1]))
+							{
+								// Enviar comando
+								outControl.println(texto);
+								clientDTP.sendFile(clientDTP.getCurrentPath() + "/" + particion[1], true);
+							} else
+							{
+								System.out.println("El archivo no existe");
+								outControl.println("file_doesnt_exist");
+							}
 						} else
 						{
-							clientDTP.sendFile(clientDTP.getCurrentPath() + "/" + particion[1], false);
+							if (clientDTP.existsFile(clientDTP.getCurrentPath() + "/" + particion[1]))
+							{
+								// Enviar comando
+								outControl.println(texto);
+								clientDTP.sendFile(clientDTP.getCurrentPath() + "/" + particion[1], true);
+							} else
+							{
+								System.out.println("El archivo no existe");
+								outControl.println("file_doesnt_exist");
+
+							}
 						}
+
+					}
+					// Resto de comandos
+					else
+					{
+						outControl.println(texto);
 
 					}
 

@@ -48,10 +48,8 @@ public class ClientDTP
 	 */
 	public void sendFile(String path, boolean isAscii)
 	{
-
 		try
 		{
-
 			File myFile = new File(path);
 
 			if (myFile.exists() && myFile.isFile())
@@ -61,9 +59,7 @@ public class ClientDTP
 				OutputStream out = sktData.getOutputStream();
 
 				byte[] mybytearray = new byte[(int) myFile.length() + 1];
-				System.out.println(mybytearray[0]);
-				System.out.println(mybytearray[1]);
-				System.out.println(mybytearray[2]);
+
 				FileInputStream fis = new FileInputStream(myFile);
 				BufferedInputStream bis = new BufferedInputStream(fis);
 				bis.read(mybytearray, 0, mybytearray.length);
@@ -77,9 +73,7 @@ public class ClientDTP
 
 			} else
 			{
-
 				System.out.println("El archivo no existe");
-
 			}
 
 		} catch (IOException e)
@@ -87,6 +81,19 @@ public class ClientDTP
 			e.printStackTrace();
 		}
 
+	}
+
+	/**
+	 * Permite determinar si un archivo existe o no
+	 * 
+	 * @param path
+	 *            Ruta del archivo
+	 * @return Verdadero si existe y falso en caso contrario
+	 */
+	public boolean existsFile(String path)
+	{
+		File myFile = new File(path);
+		return myFile.exists() && myFile.isFile();
 	}
 
 	/**

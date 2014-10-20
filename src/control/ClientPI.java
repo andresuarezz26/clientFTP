@@ -1,6 +1,7 @@
 package control;
 
 import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -14,11 +15,13 @@ public class ClientPI extends Thread {
 	private Socket sktControl;
 	private PrintWriter outControl;
 	private boolean cerrarConexion;
+	private boolean isAscii=true;
 
 	// Client DTP
 	private ClientDTP clientDTP;
 
-	public ClientPI(InetAddress dirServer, int portServer) {
+	public ClientPI(InetAddress dirServer, int portServer) 
+	{
 
 		try {
 			sktControl = new Socket(dirServer, portServer);
@@ -32,12 +35,14 @@ public class ClientPI extends Thread {
 		}
 	}
 
+
 	@Override
-	public void run() {
+	public void run() 
+	{
 
 		while (cerrarConexion == false) {
 			try {
-				
+
 
 				// Escritura de comandos
 				System.out.print(">>");
@@ -46,31 +51,59 @@ public class ClientPI extends Thread {
 				String particion[] = texto.split(" ");
 
 				// Finalizar la conexión con el servidor
+
 				if (texto.equalsIgnoreCase("END")) {
 					outControl.print("END");
 					outControl.close();
 					sktControl.close();
 					cerrarConexion = true;
-				} else if (particion.length == 2) {
-					// Enviar comando
-					outControl.println(texto);
+				}else
+				{
+					if(texto.equalsIgnoreCase("ascii"))
+					{
 
-					// Comando STOR
-					if (particion[0].equalsIgnoreCase("STOR")) {
-						// Envíar archivo
-						clientDTP.sendFile(clientDTP.getCurrentPath() + "/"
-								+ particion[1]);
+						isAscii=true;						
+						outControl.println("ascii");
+
+					}else if(texto.equalsIgnoreCase("binary"))
+					{
+
+						isAscii=false;
+						outControl.println("binary");
 					}
-					// Comando RETR
-					else if (particion[0].equalsIgnoreCase("RETR")) {
+					else if (particion.length == 2) {
+						// Enviar comando
+						outControl.println(texto);
+
+						// Comando STOR
+						if (particion[0].equalsIgnoreCase("STOR")) {
+							if(isAscii){
+								// Envíar archivo
+								clientDTP.sendFile(clientDTP.getCurrentPath() + "/"
+										+ particion[1],true);
+							}else{
+
+
+							}
+
+						}
+
+						// Comando RETR
+						else if (particion[0].equalsIgnoreCase("RETR")) {
+
+						}
 
 					}
+					// Enviar texto al servidor
+					else {
+						outControl.println(texto);
+					}
+				}
 
-				}
-				// Enviar texto al servidor
-				else {
-					outControl.println(texto);
-				}
+
+
+
+
 
 				// Recepción de respuestas
 				if (!sktControl.isClosed()) {
@@ -82,14 +115,14 @@ public class ClientPI extends Thread {
 
 					// Obtener e imprimir el resultado
 					String respuesta = input.readLine();
-					System.out.println(respuesta);
+					//System.out.println(respuesta);
 
 					if (respuesta.equalsIgnoreCase("successful_retr")) 
 					{	
 						// Recibir archivo
 						clientDTP.receiveFile(particion[1]);			
 					} 
-										
+
 					if (respuesta.equalsIgnoreCase("successful_dele")) 
 					{	
 						// Recibir archivo
@@ -97,12 +130,24 @@ public class ClientPI extends Thread {
 					}
 					if (respuesta.equalsIgnoreCase("successful_rnfr"))
 					{
-						System.out.println("El archivo a renombrar ha sido apuntado");
+
 					}
-					if (respuesta.equalsIgnoreCase("successful_rename"))
+					/*	if (respuesta.equalsIgnoreCase("successful_rename"))
 					{
-						System.out.println("El archivo ha sido renombrado");
+
 					}
+					if (respuesta.equalsIgnoreCase("autentication_error"))
+					{
+
+					}
+					if (respuesta.equalsIgnoreCase("autentication_success"))
+					{
+
+					}
+					if (respuesta.equalsIgnoreCase("waiting_pass"))
+					{
+
+					}*/
 
 					String divisionRespuesta[] = respuesta.split(";");
 
@@ -114,7 +159,7 @@ public class ClientPI extends Thread {
 
 			} catch (IOException e) {
 				System.out
-						.println("Hay un problema en el flujo de información");
+				.println("Hay un problema en el flujo de información");
 			}
 
 		}

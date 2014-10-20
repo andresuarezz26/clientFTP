@@ -140,7 +140,7 @@ public class ClientDTP
 			bos.close();
 			sktData.close();
 
-			System.out.println("El archivo se recibió exitosamento");
+			System.out.println("El archivo se recibió exitosamente");
 		} catch (IOException e)
 		{
 			System.out.println("No se pudo recibir el archivo");

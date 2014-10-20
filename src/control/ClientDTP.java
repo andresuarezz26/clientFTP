@@ -46,19 +46,24 @@ public class ClientDTP
 	 * @param path
 	 *            Ruta del archivo
 	 */
-	public void sendFile(String path)
+	public void sendFile(String path, boolean isAscii)
 	{
 
 		try
 		{
 
 			File myFile = new File(path);
+
 			if (myFile.exists() && myFile.isFile())
 			{
+
 				Socket sktData = new Socket(dirServer, portServer);
 				OutputStream out = sktData.getOutputStream();
 
 				byte[] mybytearray = new byte[(int) myFile.length() + 1];
+				System.out.println(mybytearray[0]);
+				System.out.println(mybytearray[1]);
+				System.out.println(mybytearray[2]);
 				FileInputStream fis = new FileInputStream(myFile);
 				BufferedInputStream bis = new BufferedInputStream(fis);
 				bis.read(mybytearray, 0, mybytearray.length);
@@ -69,6 +74,7 @@ public class ClientDTP
 				bis.close();
 				out.close();
 				sktData.close();
+
 			} else
 			{
 
@@ -133,5 +139,28 @@ public class ClientDTP
 			System.out.println("No se pudo recibir el archivo");
 		}
 
+	}
+
+	/**
+	 * Permite convertir de ASCII a binario
+	 * 
+	 * @param s
+	 *            Cadena que se va a pasar a binario
+	 * @return Devuelve la representación binario
+	 */
+	public String asciiToBinary(String s)
+	{
+		byte[] bytes = s.getBytes();
+		StringBuilder binary = new StringBuilder();
+		for (byte b : bytes)
+		{
+			int val = b;
+			for (int i = 0; i < 8; i++)
+			{
+				binary.append((val & 128) == 0 ? 0 : 1);
+				val <<= 1;
+			}
+		}
+		return binary.toString();
 	}
 }

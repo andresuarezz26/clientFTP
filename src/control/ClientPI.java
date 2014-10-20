@@ -15,6 +15,7 @@ public class ClientPI extends Thread
 	private Socket sktControl;
 	private PrintWriter outControl;
 	private boolean cerrarConexion;
+	private boolean isAscii = true;
 
 	// Client DTP
 	private ClientDTP clientDTP;
@@ -40,8 +41,6 @@ public class ClientPI extends Thread
 	public void run()
 	{
 
-		Scanner in = new Scanner(System.in);
-
 		while (cerrarConexion == false)
 		{
 			try
@@ -49,17 +48,33 @@ public class ClientPI extends Thread
 
 				// Escritura de comandos
 				System.out.print(">>");
+				Scanner in = new Scanner(System.in);
 				String texto = in.nextLine();
 				String particion[] = texto.split(" ");
 
-				// Finalizar la conexión con el servidor
+				// Comando END
 				if (texto.equalsIgnoreCase("END"))
 				{
 					outControl.print("END");
 					outControl.close();
 					sktControl.close();
+					in.close();
 					cerrarConexion = true;
-				} else if (particion.length == 2)
+				}
+				// Comando ASCII
+				else if (texto.equalsIgnoreCase("ASCII"))
+				{
+					isAscii = true;
+					outControl.println("ASCII");
+				}
+				// Comando BINARY
+				else if (texto.equalsIgnoreCase("BINARY"))
+				{
+					isAscii = false;
+					outControl.println("BINARY");
+				}
+				// Si el comando tiene un parámetro
+				else if (particion.length == 2)
 				{
 					// Enviar comando
 					outControl.println(texto);
@@ -67,12 +82,15 @@ public class ClientPI extends Thread
 					// Comando STOR
 					if (particion[0].equalsIgnoreCase("STOR"))
 					{
-						// Envíar archivo
-						clientDTP.sendFile(clientDTP.getCurrentPath() + "/" + particion[1]);
-					}
-					// Comando RETR
-					else if (particion[0].equalsIgnoreCase("RETR"))
-					{
+
+						if (isAscii)
+						{
+							// Enviar archivo
+							clientDTP.sendFile(clientDTP.getCurrentPath() + "/" + particion[1], true);
+						} else
+						{
+							clientDTP.sendFile(clientDTP.getCurrentPath() + "/" + particion[1], false);
+						}
 
 					}
 
@@ -87,14 +105,14 @@ public class ClientPI extends Thread
 				if (!sktControl.isClosed())
 				{
 					BufferedReader input = new BufferedReader(new InputStreamReader(sktControl.getInputStream()));
-					// Mientras el buffer está vacío
+					// Mientras el buffer estÃ¡ vacÃ­o
 					while (!input.ready())
 					{
 					}
 
 					// Obtener e imprimir el resultado
 					String respuesta = input.readLine();
-					System.out.println(respuesta);
+					// System.out.println(respuesta);
 
 					if (respuesta.equalsIgnoreCase("successful_retr"))
 					{
@@ -109,13 +127,10 @@ public class ClientPI extends Thread
 					}
 					if (respuesta.equalsIgnoreCase("successful_rnfr"))
 					{
-						System.out.println("El archivo a renombrar ha sido apuntado");
-					}
-					if (respuesta.equalsIgnoreCase("successful_rename"))
-					{
-						System.out.println("El archivo ha sido renombrado");
+
 					}
 
+					// Se divide la respuesta
 					String divisionRespuesta[] = respuesta.split(";");
 
 					for (String item : divisionRespuesta)
@@ -131,7 +146,7 @@ public class ClientPI extends Thread
 			}
 
 		}
-		in.close();
-		System.out.println("La conexión se ha cerrado");
+
+		System.out.println("La conexiÃ³n se ha cerrado");
 	}
 }

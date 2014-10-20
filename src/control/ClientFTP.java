@@ -13,7 +13,7 @@ public class ClientFTP
 	{
 		try
 		{
-			localhost = InetAddress.getLocalHost();
+			localhost = InetAddress.getByName("127.0.0.1");
 		} catch (UnknownHostException e1)
 		{
 			System.out.println("Error obteniendo la direccion localhost");

@@ -53,7 +53,7 @@ public class ClientPI extends Thread
 				String particion[] = texto.split(" ");
 
 				// Comando END
-				if (texto.equalsIgnoreCase("END"))
+				if (texto.equalsIgnoreCase("EXIT") || texto.equalsIgnoreCase("END"))
 				{
 					outControl.print("END");
 					outControl.close();
@@ -80,7 +80,7 @@ public class ClientPI extends Thread
 					outControl.println(texto);
 
 					// Comando STOR
-					if (particion[0].equalsIgnoreCase("STOR"))
+					if (particion[0].equalsIgnoreCase("STOR") || texto.equalsIgnoreCase("PUT"))
 					{
 
 						if (isAscii)
